@@ -22,9 +22,15 @@
   function handleSendBtnClick() {
     const msg = oMsg.value
 
-    if (!msg.trim.length) return
+    if (!msg.trim().length) return
+    
+    ws.send(JSON.stringify({
+      user: username,
+      dataTime: new Date().getTime(),
+      message: msg
+    }))
 
-    ws.send({user: usename})
+    oMsg.value = ''
   }
 
   function handleOpen(e) {
@@ -47,6 +53,21 @@
 
   function handleMessage(e) {
     console.log('webSocket message', e)
+    const msgData = JSON.parse(e.data)
+    oList.appendChild(createMsg(msgData))
+  }
+
+  function createMsg(data) {
+    const {user, dataTime, message} = data
+    const oItem = doc.createElement('li')
+    oItem.innerHTML = `
+      <p>
+        <span>${user}<span/>
+        <span>${new Date(dataTime)}<span/>
+        <span>${message}<span/>
+      </p>
+    `
+    return oItem
   }
 
   init()
